@@ -7,9 +7,9 @@ public class Fluid {
     private final double K; // 稠度係數
     private final double n; // 流動行為指數
     private final double frictionCoeff = 0.3;
-    private final double k0 = 14715;   // 初始基礎剛度 (N/m)
-    private final Vector2f position; // 中心點 (公尺)
-    private final double radius;     // 半徑 (公尺)
+    private final double k0 = 14715;   // 剛度 (N/m)
+    private final Vector2f position; // 中心點
+    private final double radius;     // 半徑
 
     public Fluid(double K, double n, float x, float y, double radius) {
         this.K = K;
@@ -39,21 +39,22 @@ public class Fluid {
         float rX = -normal.x * (float)vehicle.getRadius();
         float rY = -normal.y * (float)vehicle.getRadius();
 
-        //2D 外積計算 v_contact = v + omega x r (螢幕座標系 Y 軸向下，順時針旋轉 omega 為正)
+        //計算 v_contact = v + omega x r
+        //(螢幕座標系 Y 軸向下，順時針旋轉 omega 為正)
         float contactVx = vehicle.getVelocity().x - (float)vehicle.getOmega() * rY;
         float contactVy = vehicle.getVelocity().y + (float)vehicle.getOmega() * rX;
 
         float vn = contactVx * normal.x + contactVy * normal.y;
         float vt = contactVx * tangent.x + contactVy * tangent.y;
 
-        // 計算接觸面積 (近似值)
+        //計算接觸面積 (近似值)
         double contactArea = 2 * Math.sqrt(2 * vehicle.getRadius() * overlap);
 
-        //計算非牛頓流體剪應力(related to velocity)
+        //計算非牛頓流體剪應力
         float compressionSpeed = Math.max(0, -vn);
         double nonNewtonianDamping = K * Math.pow(compressionSpeed, n);
 
-        //計算外殼的非線性彈性恢復力 (related to overlap)
+        //計算外殼的非線性彈性恢復力
         double elasticForce = k0 * overlap;
 
         //總法向力 = 彈性力 + 阻尼力
@@ -86,7 +87,7 @@ public class Fluid {
         );
 
 
-        // 6. 計算力矩  = r x F
+        //計算力矩  = r x F
         double torque = rX * force.y - rY * force.x;
 
         return new Object[]{force, torque, elasticForce, nonNewtonianDamping};
