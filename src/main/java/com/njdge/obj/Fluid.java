@@ -80,7 +80,7 @@ public class Fluid {
         if (ft > maxFriction) ft = maxFriction;
         if (ft < -maxFriction) ft = -maxFriction;
 
-        // 5. 將力轉換回全局 XY 座標
+        //將力轉換回全局 XY 座標
         Vector2f force = new Vector2f(
                 (float)(fn * normal.x + ft * tangent.x),
                 (float)(fn * normal.y + ft * tangent.y)
